@@ -9,6 +9,8 @@ import { Plus, Target, Users, TrendingUp, Calendar, Settings, Bell, Search } fro
 import GoalModal from "@/components/GoalModal"
 import GroupModal from "@/components/GroupModal"
 import ProfileModal from "@/components/ProfileModal"
+
+
 import GoalChart from "@/components/GoalChart"
 import CategoryChart from "@/components/CategoryChart"
 import QuickActions from "@/components/QuickActions"
@@ -145,6 +147,7 @@ export default function Dashboard() {
   const handleUpdateGoal = (goalId: string, updates: Partial<Goal>) => {
     setGoals(goals.map((goal) => (goal.id === goalId ? { ...goal, ...updates } : goal)))
   }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
