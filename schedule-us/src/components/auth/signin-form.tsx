@@ -1,81 +1,110 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebaseConfig'; // Your client-side firebase config
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+const SignInForm = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function SigninForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSignIn = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
     setIsLoading(true);
 
-    // This is a presentational component, so no actual sign-in logic here.
-    // The parent component will handle the form submission and Firebase integration.
-    setTimeout(() => {
+    try {
+      // 1. Sign in with Firebase client SDK
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Get the ID token from the user
+      const idToken = await user.getIdToken();
+
+      // 3. Send the token to our API route to set the session cookie
+      const response = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create session');
+      }
+
+      // 4. Refresh and redirect to the home page on success
+      // router.refresh() is important to re-fetch server components
+      router.refresh();
+      router.push('/');
+      
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error('Sign-in failed:', error);
+      let errorMessage = 'An unknown error occurred.';
+      if (error.code) {
+        // More user-friendly Firebase auth errors
+        switch (error.code) {
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+          case 'auth/invalid-credential':
+            errorMessage = 'Invalid email or password.';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Access temporarily disabled due to too many failed attempts. Please try again later.';
+            break;
+          default:
+            errorMessage = 'An error occurred during sign in.';
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      setError(errorMessage);
+    } finally {
       setIsLoading(false);
-    }, 3000);
-  }
+    }
+  };
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              autoCapitalize="none"
-              autoComplete="current-password"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
-          </div>
-          <Button disabled={isLoading}>
-            {isLoading && (
-              <svg
-                className="mr-2 h-4 w-4 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l2-2.647z"
-                ></path>
-              </svg>
-            )}
-            Sign In
-          </Button>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSignIn} className="space-y-4">
+      <div>
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={isLoading}
+          placeholder="m@example.com"
+        />
+      </div>
+      <div>
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          disabled={isLoading}
+        />
+      </div>
+      {error && <p className="text-sm text-red-500">{error}</p>}
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? 'Signing In...' : 'Sign In'}
+      </Button>
+    </form>
   );
-}
+};
+
+export default SignInForm;

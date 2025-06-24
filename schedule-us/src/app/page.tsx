@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { initializeApp } from "firebase/app"
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -13,15 +11,6 @@ import GroupModal from "@/components/GroupModal"
 import ProfileModal from "@/components/ProfileModal"
 
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-}
-const app = initializeApp(firebaseConfig)
 import GoalChart from "@/components/GoalChart"
 import CategoryChart from "@/components/CategoryChart"
 import QuickActions from "@/components/QuickActions"
@@ -159,25 +148,6 @@ export default function Dashboard() {
     setGoals(goals.map((goal) => (goal.id === goalId ? { ...goal, ...updates } : goal)))
   }
 
-  const handleSignIn = async (email, password) => {
-    try {
-      const auth = getAuth(app)
-      await signInWithEmailAndPassword(auth, email, password)
-      console.log("User signed in successfully!")
-    } catch (error) {
-      console.error("Sign in failed:", error.message)
-    }
-  }
-
-  const handleSignUp = async (email, password) => {
-    try {
-      const auth = getAuth(app)
-      await createUserWithEmailAndPassword(auth, email, password)
-      console.log("User signed up successfully!")
-    } catch (error) {
-      console.error("Sign up failed:", error.message)
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
