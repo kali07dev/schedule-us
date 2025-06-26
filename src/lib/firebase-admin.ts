@@ -12,5 +12,5 @@ if (!getApps().length) {
 }
 
 const adminAuth = admin.auth();
-
-export { adminAuth };
+const adminDb = admin.firestore();
+export { adminAuth, adminDb };
