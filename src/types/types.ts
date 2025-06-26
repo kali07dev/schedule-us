@@ -31,9 +31,11 @@ export interface GroupMember extends BaseDoc { // Now extends BaseDoc to have it
 export interface Goal extends BaseDoc {
   name: string;
   description?: string;
-  startAt: Timestamp | Date;
-  endAt: Timestamp | Date;
+  startAt: Timestamp | Date | string;
+  endAt: Timestamp | Date | string;
   groupId: string;
+  category?: string;
+  color?: string;
   isCompleted: boolean; // NEW
   isClosed: boolean;    // NEW
 }
@@ -57,6 +59,7 @@ export interface GoalProgressData {
 
 export interface GoalWithProgress extends Goal, GoalProgressData {
   steps: GoalStep[];
+  color?: string; // Optional color for UI representation
 }
 
 // NEW: Type for the dashboard endpoint

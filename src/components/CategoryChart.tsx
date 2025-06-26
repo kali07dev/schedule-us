@@ -13,7 +13,9 @@ export default function CategoryChart({ goals, categoryColors }: CategoryChartPr
   const categoryData = Object.entries(
     goals.reduce(
       (acc, goal) => {
-        acc[goal.category] = (acc[goal.category] || 0) + 1
+        if (goal.category) {
+          acc[goal.category] = (acc[goal.category] || 0) + 1
+        }
         return acc
       },
       {} as Record<string, number>,
