@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  if (!process.env.GOOGLE_API_KEY) {
+  if (!process.env.NEXT_GOOGLE_API_KEY) {
     return NextResponse.json({ error: 'Google API key is not configured.' }, { status: 500 });
   }
 
