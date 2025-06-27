@@ -6,7 +6,7 @@ import { getGoalsWithProgress } from '@/lib/goal-helper';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Initialize Gemini Client
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.NEXT_GOOGLE_API_KEY!);
 
 export async function POST(request: NextRequest) {
   const userId = await getUserIdFromRequest(request);
