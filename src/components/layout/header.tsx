@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/layout/user-nav";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb";
+import { PanelLeft } from "lucide-react";
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -16,7 +17,9 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur-sm">
       <div className="flex flex-1 items-center gap-2">
-        <SidebarTrigger className="lg:hidden" />
+        <SidebarTrigger className="hidden lg:flex" >
+          <PanelLeft className="h-5 w-5"/>
+        </SidebarTrigger>
         <Separator orientation="vertical" className="mx-2 hidden h-6 lg:block" />
         <Breadcrumb>
           <BreadcrumbList>

@@ -1,7 +1,7 @@
 // components/layout/app-sidebar.tsx
 "use client";
 
-import { Home, Plus, Search, Sparkles } from "lucide-react";
+import { Home, Plus, Search, Sparkles, Users } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { NavMain } from "./nav-main";
 import { NavGroups } from "./nav-groups";
@@ -23,13 +23,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     { title: "Dashboard", url: "/", icon: Home, isActive: pathname === "/" },
     { title: "Search", url: "#", icon: Search },
     { title: "Ask AI", url: "#", icon: Sparkles },
+    { title: "Groups", url: "/groups", icon: Users },
   ];
 
   return (
     <>
         <GoalModal isOpen={isGoalModalOpen} onClose={() => setGoalModalOpen(false)} groups={groups} />
         <GroupModal isOpen={isGroupModalOpen} onClose={() => setGroupModalOpen(false)} />
-        <Sidebar className="border-r" {...props}>
+        <Sidebar className="border-r"
+         collapsible="icon"
+         {...props}
+         >
           <SidebarHeader className="p-4">
             <div className="flex items-center space-x-2">
                 <Target className="h-8 w-8 text-blue-600" />
