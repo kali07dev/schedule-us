@@ -30,6 +30,7 @@ export default async function DashboardPage() {
     ]);
 
     if (!dashboardData || !allGoals || !allGroups) {
+        console.log("Failed to load dashboard data or goals/groups", dashboardData, allGoals, allGroups);
         return (
             <div className="flex items-center justify-center h-full">
                 <p className="text-lg text-muted-foreground">Could not load dashboard data. Please try again later.</p>

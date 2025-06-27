@@ -18,7 +18,8 @@ async function fetchAPI(path: string, options: RequestInit = {}) {
   };
   
   // Use NEXT_PUBLIC_API_URL to construct the full URL
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api${path}`;
+  // const url = `${process.env.NEXT_PUBLIC_API_URL}/api${path}`;
+  const url = `/api${path}`;
   const res = await fetch(url, mergedOptions);
 
   if (!res.ok) {

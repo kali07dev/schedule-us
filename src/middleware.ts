@@ -1,29 +1,41 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  const session = request.cookies.get('session');
-  const { pathname } = request.nextUrl;
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const sessionCookie = req.cookies.get('session')?.value;
 
-  // If trying to access API routes without a session, block them
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth') && !session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const isAuthPage = pathname.startsWith('/auth');
 
-  // Allow auth routes to be public
-  if (pathname.startsWith('/api/auth')) {
+  // If the user is trying to access an auth page
+  if (isAuthPage) {
+    if (sessionCookie) {
+      // If they have a session cookie, they are likely logged in.
+      // Redirect them to the home page.
+      // We don't need to verify the cookie here, as an invalid one will be
+      // caught on protected pages anyway. This is a simple UX improvement.
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+    // If no session cookie, let them access the auth page
     return NextResponse.next();
   }
-  
-  // Redirect to login if trying to access protected pages without a session
-  if (!session && pathname !== '/auth/login' && pathname !== '/auth/signup') {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+
+  // For all other pages (protected routes)
+  if (!sessionCookie) {
+    // If no session cookie, redirect to sign-in
+    return NextResponse.redirect(new URL('/auth/signin', req.url));
   }
+  
+  // If a session cookie exists, we assume it's valid.
+  // The verification should happen in your API routes or Server Components
+  // that fetch sensitive data, to avoid hitting Firebase on every request.
+  // This provides basic route protection. For high security, you would
+  // verify it here on every navigation.
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 };
