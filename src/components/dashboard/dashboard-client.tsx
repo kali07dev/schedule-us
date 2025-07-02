@@ -48,10 +48,10 @@ export function DashboardClient({ initialDashboardData, initialGoals, initialGro
       <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <WelcomeHeader userName={"Alex"} />
         
-        <div>
+        {/* <div>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
           <p className="mt-1 text-md text-gray-600">Here&apos;s an overview of your progress. Keep pushing forward!</p>
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard 
